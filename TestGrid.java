@@ -11,7 +11,6 @@ public class TestGrid
 	public static void main(String[] args)
 	{
 		Grid<Integer> grid = new Grid<>(SIZE);
-		assert grid.getCapacity() == SIZE*SIZE ;
 
 		assert grid.idx(0,0) == 0 ;
 		assert grid.idx(1,0) == 1 ;

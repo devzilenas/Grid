@@ -8,20 +8,18 @@
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Random;
 
 public class Grid<E>
 {
-	private int     size    ;
 	private int     width   ;
 	private int     height  ;
 	private List<E> elements;
-
-	public int getCapacity()
-	{
-		return getWidth() * getHeight();
-	}
 
 	/**
 	 * @return number of elements in grid. Null is also an element.
@@ -36,7 +34,19 @@ public class Grid<E>
 	 */
 	public Grid(int sideSize)
 	{
-		this(sideSize,sideSize);
+		this(sideSize, sideSize);
+	}
+
+	/**
+	 * Copy constructor.
+	 */
+	public Grid(Grid grid)
+	{
+		this.width  = grid.getWidth() ;
+		this.height = grid.getHeight(); 
+		this.setElements(
+				new ArrayList<E>(
+					grid.getElements()));
 	}
 
 	/**
@@ -62,6 +72,14 @@ public class Grid<E>
 	}
 
 	/**
+	 * Set elements.
+	 */
+	public void setElements(List<E> elements)
+	{
+		this.elements = elements;
+	}
+
+	/**
 	 * @return all elements of the grid
 	 */
 	public List<E> getElements()
@@ -78,14 +96,27 @@ public class Grid<E>
 	}
 
 	/**
-	 * Returns the element at position (x,y).
+	 * @return list iterator for a grid
+	 */
+	public ListIterator<E> listIterator()
+	{
+		return getElements().listIterator();
+	}
+
+	/**
+	 * Returns the element at position (x,y). Doesn't fail on out of bounds x, y.
 	 *
 	 * @return the element at position (x,y)
 	 */
 	public E get(int x, int y)
 	{
-		return getElements().get(
-				idx(x,y));
+		return    x >= 0 
+			   && y >= 0
+			   && x < getWidth()
+			   && y < getHeight()
+			   ? getElements().get(
+					   				idx(x,y))
+			   : null ;
 	}
 
 	/**
@@ -121,7 +152,7 @@ public class Grid<E>
 	 */
 	public void put(int idx, E element)
 	{
-		getElements().add(idx, element);
+		getElements().set(idx, element);
 	}
 
 	/**
@@ -152,5 +183,69 @@ public class Grid<E>
 	public int idx(int x, int y)
 	{
 		return y*getHeight() + x;
+	}
+
+	/**
+	 * @return neighbors of the cell.
+	 */
+	public List<E> getNeighbors(int x, int y)
+	{
+		return new LinkedList<>(
+								Arrays.asList(
+												get(x  ,y-1), 
+												get(x-1,y-1),
+												get(x-1,y  ),
+												get(x-1,y+1),
+												get(x  ,y+1),
+												get(x+1,y+1),
+												get(x+1,y  ),
+												get(x+1,y-1)));
+	}
+
+	/**
+	 * @return neighbors of the cell.
+	 */
+	public List<E> getNeighbors(int idx)
+	{
+		return getNeighbors(
+							x(idx), 
+							y(idx));
+	}
+
+	/**
+	 * Fills Grid with random values.
+	 * @param values values for random.
+	 */
+	public void populate(E[] values)
+	{
+		Random random = new Random();
+        for (ListIterator<E> iterator = getElements().listIterator(); iterator.hasNext(); )
+        {
+			iterator.next();
+			iterator.set(
+					      values[
+								 random.nextInt(values.length) ]);
+        }
+	}
+
+	/**
+	 * Makes a list of indexes at which a given value is.
+	 * @return indexes of values.
+	 */
+	public List<Integer> getIndexes(E value)
+	{
+		List<Integer> indexes = new LinkedList<>();
+		E element             = null;
+		Integer index = 0;
+		for (Iterator<E> iterator = iterator(); iterator.hasNext();)
+		{
+			element = iterator.next();
+			if (value.equals(element))
+			{
+				indexes.add(index);
+			}
+			index++;
+		}
+		return indexes;
 	}
 }
