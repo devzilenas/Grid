@@ -8,7 +8,6 @@
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -190,7 +189,7 @@ public class Grid<E>
 	 */
 	public List<E> getNeighbors(int x, int y)
 	{
-		return new LinkedList<>(
+		return new ArrayList<>(
 								Arrays.asList(
 												get(x  ,y-1), 
 												get(x-1,y-1),
@@ -222,9 +221,7 @@ public class Grid<E>
         for (ListIterator<E> iterator = getElements().listIterator(); iterator.hasNext(); )
         {
 			iterator.next();
-			iterator.set(
-					      values[
-								 random.nextInt(values.length) ]);
+			iterator.set(values[random.nextInt(values.length)]);
         }
 	}
 
@@ -234,7 +231,7 @@ public class Grid<E>
 	 */
 	public List<Integer> getIndexes(E value)
 	{
-		List<Integer> indexes = new LinkedList<>();
+		List<Integer> indexes = new ArrayList<>();
 		E element             = null;
 		Integer index = 0;
 		for (Iterator<E> iterator = iterator(); iterator.hasNext();)
@@ -247,5 +244,41 @@ public class Grid<E>
 			index++;
 		}
 		return indexes;
+	}
+
+	/**
+	 * @return random index
+	 */
+	public int randomIndex()
+	{
+		Random random = new Random();
+		return random.nextInt(getSize());
+	}
+
+	/**
+	 * Get index of random element of given type.
+	 */
+	public int randomIndex(Object obj)
+	{
+		Random random = new Random();
+		E el = null;
+		int count = 0;
+		int index = 0;
+		for (int i = random.nextInt(getSize()); count < getSize(); count++) 
+		{
+			if (i >= getSize())
+			{
+				i = 0;
+			}
+
+			el = get(i);
+			if (obj.equals(el))
+			{
+				index = i;
+				break;
+			} 
+			i++;
+		}
+		return index;
 	}
 }
